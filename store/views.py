@@ -8,7 +8,7 @@ def index(request):
 def cart(request):
     context = {}
     return render(request, 'store/cart.html')
-
+ 
 def checkout(request):
     context = {}
     return render(request, 'store/checkout.html')
