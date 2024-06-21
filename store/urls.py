@@ -10,4 +10,6 @@ urlpatterns = [
 
     path('loginUser', views.loginUser, name="loginUser"),
     path('logoutUser', views.logoutUser, name="logoutUser"),
+
+    path('update_item/', views.updateItem, name="update_item"),
 ]
