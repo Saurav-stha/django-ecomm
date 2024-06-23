@@ -45,6 +45,17 @@ def logoutUser(request):
     logout(request)
     return redirect('store')
 
+def updateCart(request):
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        orderitems = order.orderitem_set.all()
+
+        totalQty = sum(item.qty for item in orderitems)
+    else:
+        totalQty = 0
+
+    return JsonResponse({'totalQty': totalQty})
 
 
 def cart(request):

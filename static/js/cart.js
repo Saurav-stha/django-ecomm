@@ -1,15 +1,14 @@
-
-
 var updateBtns = document.getElementsByClassName('update-cart')
 
-for (var i=0; updateBtns.length; i++){
+for (var i=0; i < updateBtns.length; i++){
 
     updateBtns[i].addEventListener('click', function(){
 
         var productId = this.dataset.product
         var action = this.dataset.action
+        var productName = this.dataset.prodname
     
-        console.log("id: ",productId, '  action: ',action)
+        console.log("id: ",productId, '  action: ',action, ' name: ', productName)
 
         console.log("user:  ", user)
         
@@ -19,7 +18,9 @@ for (var i=0; updateBtns.length; i++){
         else{
             // console.log("eii what up",user)
             updateUserOrder(productId, action)
+            
         }
+
     })
 
 }
@@ -43,6 +44,9 @@ function updateUserOrder(productId, action){
     })
 
     .then((data)=>{
+        // no reload update of cart qty in index
+        updateCartTotal();
+
         console.log('dataa: ',data)
     })
 }

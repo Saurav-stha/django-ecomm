@@ -11,6 +11,7 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
 
 	<script type="text/javascript">
+
 		var user = "{{ request.user }}"
 
 		// function in django documentation of csrf token ajax
@@ -31,6 +32,29 @@
 		}
 		const csrftoken = getToken('csrftoken');
 
+		// Function to update cart total
+		function updateCartTotal() {
+			fetch("{% url 'update_cart' %}", {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				//console.log(data.totalQty)
+				document.getElementById('cart-total').textContent = data.totalQty;
+			})
+			.catch(error => console.error('Error:', error));
+		}
+
+		document.addEventListener('DOMContentLoaded', (event) => {
+			updateCartTotal(); // Update cart total when the page loads
+		});
+
+
+	
 	</script>
 
 </head>
