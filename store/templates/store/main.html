@@ -45,13 +45,37 @@
 			.then(data => {
 				//console.log(data.totalQty)
 				document.getElementById('cart-total').textContent = data.totalQty;
+				document.getElementById('cart-qty').textContent = data.totalQty;
+				document.getElementById('cart-cost').textContent = data.totalCost;
+
+			})
+			.catch(error => console.error('Error:', error));
+		}
+		function updateCartItem() {
+			fetch("{% url 'update_cart_item' %}", {
+				method: 'GET',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-CSRFToken': csrftoken
+				}
+			})
+			.then(response => response.json())
+			.then(data => {
+				console.log(data.itemTotal) 
+
 			})
 			.catch(error => console.error('Error:', error));
 		}
 
+
+
 		document.addEventListener('DOMContentLoaded', (event) => {
 			updateCartTotal(); // Update cart total when the page loads
 		});
+
+		
+
+
 
 
 	

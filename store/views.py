@@ -52,10 +52,24 @@ def updateCart(request):
         orderitems = order.orderitem_set.all()
 
         totalQty = sum(item.qty for item in orderitems)
+        totalCost = sum(item.product.price*item.qty for item in orderitems)
     else:
         totalQty = 0
 
-    return JsonResponse({'totalQty': totalQty})
+    context = {'totalQty': totalQty, 'totalCost': totalCost}
+    return JsonResponse(context)
+
+def updateCartItem(request, prodId):
+    customer = request.user.customer
+
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    orderitem = order.orderitem_set.filter(id=prodId)
+
+    itemTotal = orderitem.product.price
+
+    context = {'itemTotal': itemTotal}
+    return JsonResponse(context)
+
 
 
 def cart(request):
