@@ -48,29 +48,50 @@
 				document.getElementById('cart-qty').textContent = data.totalQty;
 				document.getElementById('cart-cost').textContent = data.totalCost;
 
-			})
-			.catch(error => console.error('Error:', error));
-		}
-		function updateCartItem() {
-			fetch("{% url 'update_cart_item' %}", {
-				method: 'GET',
-				headers: {
-					'Content-Type': 'application/json',
-					'X-CSRFToken': csrftoken
-				}
-			})
-			.then(response => response.json())
-			.then(data => {
-				console.log(data.itemTotal) 
+				//console.log(data.orderitem)
 
 			})
 			.catch(error => console.error('Error:', error));
+		}
+		function updateCartItem(prodId,action) {
+			if (action == 'add'){
+				var itemQty = parseInt(document.getElementById('item-quantity').textContent)
+				itemQty++
+			}
+			else if(action == 'remove'){
+				var itemQty = parseInt(document.getElementById('item-quantity').textContent)
+				itemQty--
+			}else{
+				return
+			}
+			var itemPrice = parseFloat(document.getElementById('item-price').textContent)
+			itemTotal = parseFloat(itemQty * itemPrice)
+
+			document.getElementById('item-quantity').textContent = itemQty
+			document.getElementById('item-total').textContent = "$" + itemTotal
+			
+			// var url = `/update_cart_item/${prodId}/`;
+			// fetch(url , {
+			// 	method: 'GET',
+			// 	headers: {
+			// 		'Content-Type': 'application/json',
+			// 	}
+			// })
+			// .then(response => response.json())
+			// .then(data => {
+				// console.log("producc id "+prodId+ " total "+ data.itemTotal)
+				// document.getElementById('item-quantity').textContent = data.itemQty
+				// document.getElementById('item-total').textContent = "$"+data.itemTotal
+
+			// }
+			// .catch(error => console.error('Error:', error));
 		}
 
 
 
 		document.addEventListener('DOMContentLoaded', (event) => {
 			updateCartTotal(); // Update cart total when the page loads
+			//updateCartItem();
 		});
 
 		

@@ -46,6 +46,7 @@ function updateUserOrder(productId, action){
     .then((data)=>{
         // no reload update of cart qty in index
         updateCartTotal();
+        updateCartItem(productId, action);
 
         console.log('dataa: ',data)
     })

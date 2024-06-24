@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from django.http import JsonResponse
 
@@ -8,7 +8,17 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 # Create your views here.
+
+
+
+
 def index(request):
+    # user = request.user
+    # try:
+    #     customer = user.customer
+    #     return JsonResponse(customer)
+    # except Customer.DoesNotExist:
+    #     return JsonResponse({'error': 'User has no customer'}, status=404)
 
     products = Product.objects.all()
 
@@ -46,29 +56,39 @@ def logoutUser(request):
     return redirect('store')
 
 def updateCart(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-        orderitems = order.orderitem_set.all()
+    # if request.user.is_authenticated:
+    customer = request.user.customer
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    orderitems = order.orderitem_set.all()
 
-        totalQty = sum(item.qty for item in orderitems)
-        totalCost = sum(item.product.price*item.qty for item in orderitems)
-    else:
-        totalQty = 0
+    totalQty = sum(item.qty for item in orderitems)
+    totalCost = sum(item.product.price*item.qty for item in orderitems)
+
+    # else:
+    #     totalQty = 0
 
     context = {'totalQty': totalQty, 'totalCost': totalCost}
     return JsonResponse(context)
 
-def updateCartItem(request, prodId):
-    customer = request.user.customer
 
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
-    orderitem = order.orderitem_set.filter(id=prodId)
 
-    itemTotal = orderitem.product.price
+# #################### to be eedddiitedd ############################
+# def updateCartItem(request, pk):
+#     customer = request.user.customer
+    
+#     order, created = Order.objects.get_or_create(customer=customer, complete=False)
+#     # orderitem = order.orderitem_set.all()
 
-    context = {'itemTotal': itemTotal}
-    return JsonResponse(context)
+#     # return JsonResponse({'sth'})
+#     orderitems = OrderItem.objects.filter(order=order)
+    
+#     one = orderitems.get(id=pk)
+#     itemTotal = one.product.price*one.qty
+#     itemQty = one.qty
+
+#     # return JsonResponse({'id ':pk, ' customer ': customer.name, ' totalll ': itemTotal, " updated qty: ": itemQty})
+#     context = {'itemTotal': itemTotal , 'itemQty':itemQty}
+#     return JsonResponse(context)
 
 
 
