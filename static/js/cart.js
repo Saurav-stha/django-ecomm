@@ -2,7 +2,7 @@ var updateBtns = document.getElementsByClassName('update-cart')
 
 for (var i=0; i < updateBtns.length; i++){
 
-    updateBtns[i].addEventListener('click', function(){
+    updateBtns[i].addEventListener('click', function(event){
 
         var productId = this.dataset.product
         var action = this.dataset.action
@@ -17,6 +17,7 @@ for (var i=0; i < updateBtns.length; i++){
         }
         else{
             // console.log("eii what up",user)
+
             updateUserOrder(productId, action)
             
         }
@@ -47,6 +48,7 @@ function updateUserOrder(productId, action){
         // no reload update of cart qty in index
         updateCartTotal();
         updateCartItem(productId, action);
+
 
         console.log('dataa: ',data)
     })

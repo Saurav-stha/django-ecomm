@@ -33,8 +33,8 @@
             </div>
             
             {% for item in items %}
-            <div class="cart-row">
-                <div type="hidden" id="item-id-{{ item.product.id }}">
+            <div class="cart-row" id="item-id-{{item.product.id}}">
+                <input type="text" class="item-details" value="{{item.product.id}}" hidden>
                 <div style="flex:2"><img class="row-image" src="{{ item.product.imageURL }}"></div>
                 <div style="flex:2"><p>{{ item.product.name }}</p></div>
                 <div style="flex:1"><p>$<span id="item-price">{{ item.product.price|floatformat:2 }}</span></p></div>
@@ -46,8 +46,9 @@
                         <img data-product="{{ item.product.id}}" data-action="remove" class="chg-quantity update-cart" src="{% static  'img/arrow-down.png' %}">
                     </div>
                 </div>
-                <div style="flex:1"><p id="item-total">${{ item.get_total|floatformat:2 }} </p></div>
+                <div style="flex:1"><p>$<span id="item-total">{{ item.get_total|floatformat:2 }}</span> </p></div>
             </div>
+
             {% endfor %}
 	</div>
 </div>

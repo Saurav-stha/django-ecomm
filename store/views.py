@@ -100,7 +100,7 @@ def cart(request):
         items = order.orderitem_set.all()
     else:
         items = []
-        order = {'get_cart_total' : 0, 'get_cart_itemsQty' : 0, 'get_cart_total_items':0}
+        order = {'get_cart_total' : 0, 'get_cart_itemsQty' : 0, 'get_cart_total_items':0, 'shipping': False}
 
     context = {'items': items, 'order': order}
     return render(request, 'store/cart.html', context)
@@ -111,9 +111,10 @@ def checkout(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete = False)
         items = order.orderitem_set.all()
+        cartItems = order.get_cart_total_items
     else:
         items = []
-        order = {'get_cart_total': 0 , 'get_cart_itemsQty': 0, 'get_cart_total_items' : 0}
+        order = {'get_cart_total': 0 , 'get_cart_itemsQty': 0, 'get_cart_total_items' : 0, 'shipping': False}
     
     context = {'items':items, 'order': order}
     return render(request, 'store/checkout.html', context )

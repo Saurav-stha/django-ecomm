@@ -54,21 +54,26 @@
 			.catch(error => console.error('Error:', error));
 		}
 		function updateCartItem(prodId,action) {
+			//console.log(prodId)
+			//const parentElem = e.closest('.cart-row')
+			//console.log(parentElem)
+			id = `item-id-${prodId}`
+			var parentElem = document.getElementById(id)
+			var itemPrice = parseFloat(parentElem.querySelector('#item-price').textContent).toFixed(2)
+			var itemQty = parseInt(parentElem.querySelector('#item-quantity').textContent)
+			
 			if (action == 'add'){
-				var itemQty = parseInt(document.getElementById('item-quantity').textContent)
 				itemQty++
 			}
 			else if(action == 'remove'){
-				var itemQty = parseInt(document.getElementById('item-quantity').textContent)
 				itemQty--
 			}else{
 				return
 			}
-			var itemPrice = parseFloat(document.getElementById('item-price').textContent)
-			itemTotal = parseFloat(itemQty * itemPrice)
+			itemTotal = parseFloat(itemQty * itemPrice).toFixed(2)
 
-			document.getElementById('item-quantity').textContent = itemQty
-			document.getElementById('item-total').textContent = "$" + itemTotal
+			parentElem.querySelector('#item-quantity').textContent = itemQty
+			parentElem.querySelector('#item-total').textContent = itemTotal
 			
 			// var url = `/update_cart_item/${prodId}/`;
 			// fetch(url , {
