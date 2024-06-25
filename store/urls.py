@@ -12,7 +12,9 @@ urlpatterns = [
     path('logoutUser', views.logoutUser, name="logoutUser"),
 
     path('update_item/', views.updateItem, name="update_item"),
+    path('process_order/', views.processOrder, name="process_order"),
 
     path("update_cart", views.updateCart, name="update_cart"), # for data of cart total qty
-    
+
+
 ]

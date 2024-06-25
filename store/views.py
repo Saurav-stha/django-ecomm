@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 
 import json
-
+import datetime
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import *
@@ -59,6 +59,8 @@ def updateCart(request):
     # if request.user.is_authenticated:
     customer = request.user.customer
     order, created = Order.objects.get_or_create(customer=customer, complete=False)
+
+    # .filter checks those items of not complete orders(i.e. not paid orders)
     orderitems = order.orderitem_set.all()
 
     totalQty = sum(item.qty for item in orderitems)
@@ -144,3 +146,43 @@ def updateItem(request):
         orderItem.delete()
 
     return JsonResponse('Item was added ', safe=False)# safe=false navayea error like of no-csrftoken
+
+
+def processOrder(request):
+    # print("data: ", request.body)
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body)
+
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete= False)
+        total = float(data['form']['total'])
+        order.transaction_id = transaction_id
+
+        # for checking no any manipulation done by user
+        # print(total)
+        # tryTotal = int(order.get_cart_total())
+        # print(tryTotal)
+        if total == order.get_cart_total():
+            # setting order status to complete
+            print("yesss")
+            order.complete = True
+        else:
+            print("no god no noooo")
+
+        order.save()
+
+        if order.shipping == True:
+            ShippingAddress.objects.create(
+                customer =customer,
+                order=order,
+                address = data['shipping']['address'],
+                city=data['shipping']['city'],
+                state = data['shipping']['state'],
+                zipcode = data['shipping']['zipcode'],
+
+            )
+
+    else:
+        print("User not logged in hai")
+    return JsonResponse('payment complete', safe=False)

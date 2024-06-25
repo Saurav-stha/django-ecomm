@@ -40,12 +40,12 @@ class Order(models.Model):
     
     @property
     def shipping(self):
-        shipping = False
+        shippingStat = False
         orderitems = self.orderitem_set.all()
         for i in orderitems:
             if i.product.digital == False:
-                shipping = True
-        return shipping
+                shippingStat = True
+        return shippingStat
     
     def get_cart_total(self):
         orderitems = self.orderitem_set.all()
