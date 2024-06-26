@@ -56,18 +56,19 @@ def logoutUser(request):
     return redirect('store')
 
 def updateCart(request):
-    # if request.user.is_authenticated:
-    customer = request.user.customer
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
 
-    # .filter checks those items of not complete orders(i.e. not paid orders)
-    orderitems = order.orderitem_set.all()
+        # .filter checks those items of not complete orders(i.e. not paid orders)
+        orderitems = order.orderitem_set.all()
 
-    totalQty = sum(item.qty for item in orderitems)
-    totalCost = sum(item.product.price*item.qty for item in orderitems)
+        totalQty = sum(item.qty for item in orderitems)
+        totalCost = sum(item.product.price*item.qty for item in orderitems)
 
-    # else:
-    #     totalQty = 0
+    else:
+        customer = request.user
+        totalQty = 0
 
     context = {'totalQty': totalQty, 'totalCost': totalCost}
     return JsonResponse(context)

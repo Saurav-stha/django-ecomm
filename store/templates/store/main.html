@@ -62,18 +62,30 @@
 			var itemPrice = parseFloat(parentElem.querySelector('#item-price').textContent).toFixed(2)
 			var itemQty = parseInt(parentElem.querySelector('#item-quantity').textContent)
 			
-			if (action == 'add'){
-				itemQty++
-			}
-			else if(action == 'remove'){
-				itemQty--
-			}else{
-				return
-			}
-			itemTotal = parseFloat(itemQty * itemPrice).toFixed(2)
 
-			parentElem.querySelector('#item-quantity').textContent = itemQty
-			parentElem.querySelector('#item-total').textContent = itemTotal
+			if (itemQty <= 0){
+				console.log("0")
+				parentElem.classList.add("hidden");
+				//to reload when item removed or when item goes from 0 to 1
+				window.location.reload()
+			}else{
+
+				if (action == 'add'){
+					itemQty++
+				}
+				else if(action == 'remove'){
+					itemQty--
+				}else{
+					return
+				}
+				itemTotal = parseFloat(itemQty * itemPrice).toFixed(2);
+	
+				parentElem.querySelector('#item-quantity').textContent = itemQty
+				parentElem.querySelector('#item-total').textContent = itemTotal
+			}
+
+
+
 			
 			// var url = `/update_cart_item/${prodId}/`;
 			// fetch(url , {
@@ -94,7 +106,7 @@
 
 		document.addEventListener('DOMContentLoaded', (event) => {
 			updateCartTotal(); // Update cart total when the page loads
-			//updateCartItem();
+			
 		});
 
 	</script>
