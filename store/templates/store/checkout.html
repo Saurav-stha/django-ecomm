@@ -10,6 +10,7 @@
 	<div class="col-lg-6">
 		<div class="box-element" id="form-wrapper">
             <form id="form">
+                {% csrf_token %}
                 {% if not request.user.is_authenticated %}
                 <div id="user-info">
                     <div class="form-field">
@@ -98,6 +99,10 @@
     }
 
     var form = document.getElementById('form')
+
+    csrftok = form.getElementsByTagName('input')[0].value
+    console.log("tokeenn " , csrftok)
+
     form.addEventListener('submit', function(e){
         e.preventDefault()
         document.getElementById('form-button').classList.add("hidden")

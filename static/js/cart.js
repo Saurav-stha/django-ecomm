@@ -13,7 +13,7 @@ for (var i=0; i < updateBtns.length; i++){
         console.log("user:  ", user)
         
         if ( user === "AnonymousUser"){
-            console.log("i have never met this man in my life")
+            addCookieItem(productId, action)
         }
         else{
             // console.log("eii what up",user)
@@ -25,6 +25,35 @@ for (var i=0; i < updateBtns.length; i++){
     })
 
 }
+
+
+function addCookieItem(prodId, action){
+
+    if (action == 'add'){
+
+        if (cart[prodId] == undefined)
+            cart[prodId] = {'quantity':1}
+        else
+            cart[prodId]['quantity'] += 1  
+        
+    }
+    else if (action == 'remove'){
+        cart[prodId]['quantity'] -= 1
+        if (cart[prodId]['quantity'] <= 0 ){
+            console.log("removed the item ")
+            delete cart[prodId]
+        }
+    }
+    updateCartTotal();
+    updateCartItem(prodId, action);
+
+    document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+    console.log('cart: ',cart)
+    console.log("i have never met this man in my life")
+
+
+}
+
 
 function updateUserOrder(productId, action){
     console.log("user logged in. sending data...")

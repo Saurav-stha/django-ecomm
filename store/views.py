@@ -67,8 +67,24 @@ def updateCart(request):
         totalCost = sum(item.product.price*item.qty for item in orderitems)
 
     else:
-        customer = request.user
-        totalQty = 0
+        try:
+            cart = json.loads(request.COOKIES['cart'])
+        except:
+            cart = {}
+        print('cart: ' ,cart)
+        order = {'get_cart_total' : 0, 'get_cart_itemsQty' : 0, 'get_cart_total_items':0, 'shipping': False}
+
+        cartItemsQty = order['get_cart_itemsQty']
+        # print("qty : ",cartItemsQty)
+
+        for i in cart:
+            cartItemsQty += cart[i]['quantity']
+
+            product = Product.objects.get(id=i)
+            total = (product.price * cartItemsQty)
+
+        totalCost = total
+        totalQty = cartItemsQty
 
     context = {'totalQty': totalQty, 'totalCost': totalCost}
     return JsonResponse(context)
@@ -101,11 +117,46 @@ def cart(request):
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete = False)
         items = order.orderitem_set.all()
+        cartItemsQty = order.get_cart_itemsQty()
+        # print("cart totla qty : ",cartItemsQty)
     else:
+        try:
+            cart = json.loads(request.COOKIES['cart'])
+        except:
+            cart = {}
+        print('cart: ' ,cart)
         items = []
         order = {'get_cart_total' : 0, 'get_cart_itemsQty' : 0, 'get_cart_total_items':0, 'shipping': False}
+        # previous set cart items qty
+        cartItemsQty = order['get_cart_itemsQty']
 
-    context = {'items': items, 'order': order}
+        for i in cart:
+            cartItemsQty += cart[i]['quantity']
+
+            product = Product.objects.get(id=i)
+            total = (product.price * cart[i]['quantity'])
+
+            order['get_cart_total'] += total
+            order['get_cart_itemsQty'] += cart[i]['quantity']
+
+
+            item = {
+                'product':{
+                    'id':product.id,
+                    'name':product.name,
+                    'price':product.price,
+                    'imageURL':product.imageURL
+                },
+                'qty':cart[i]['quantity'],
+                'get_total':total,
+            }
+            items.append(item)
+
+        print(items)
+
+
+
+    context = {'items': items, 'order': order, 'cartItemsQty': cartItemsQty}
     return render(request, 'store/cart.html', context)
  
 def checkout(request):

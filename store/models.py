@@ -13,7 +13,7 @@ class Customer(models.Model):
     
 class Product(models.Model):
     name = models.CharField(max_length=200)
-    price = models.FloatField()
+    price = models.DecimalField(max_digits=8, decimal_places=2)
     digital = models.BooleanField(default=False, null=True, blank=True)
     image = models.ImageField(null=True, blank=True)
 
@@ -54,6 +54,7 @@ class Order(models.Model):
 
         return cart_total
 
+    # oredaa = afai gareko haru
     def get_cart_total_items(self):
         orderitems= self.orderitem_set.all()
         cart_total_items = sum([1 for item in orderitems])

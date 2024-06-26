@@ -30,7 +30,39 @@
 			}
 			return cookieValue;
 		}
-		const csrftoken = getToken('csrftoken');
+		var csrftoken = getToken('csrftoken');
+		console.log("CSRFToken: ",csrftoken)
+
+
+		function getCookie(name){
+			//split cookie string
+			var cookieArr = document.cookie.split(";");
+
+			for (var i=0; i<cookieArr.length; i++){
+				var cookiePair = cookieArr[i].split("=");
+
+				//removing whitespace 
+				if(name == cookiePair[0].trim()){
+					//decode cookie value
+					return decodeURIComponent(cookiePair[i].trim());
+				}
+			}
+
+			//if not found
+			return null
+		}
+		var cart = JSON.parse(getCookie('cart'))
+		
+		if(cart == undefined){
+			cart = {}
+			
+			console.log("cart created")
+			
+			document.cookie = 'cart=' + JSON.stringify(cart) + ';domain=;path=/'
+		}
+		console.log("cart::: ",cart)
+
+
 
 		// Function to update cart total
 		function updateCartTotal() {
@@ -43,10 +75,17 @@
 			})
 			.then(response => response.json())
 			.then(data => {
+				//console.log("in updateCartTotal funcitonnnn ")
 				//console.log(data.totalQty)
 				document.getElementById('cart-total').textContent = data.totalQty;
-				document.getElementById('cart-qty').textContent = data.totalQty;
-				document.getElementById('cart-cost').textContent = data.totalCost;
+
+				cartQtyElem = document.getElementById('cart-qty')
+				cartCostElem = document.getElementById('cart-cost')
+				if(cartCostElem != null && cartQtyElem != null){
+
+					cartQtyElem.textContent = data.totalQty;
+					document.getElementById('cart-cost').textContent = data.totalCost;
+				}
 
 				//console.log(data.orderitem)
 
@@ -59,29 +98,33 @@
 			//console.log(parentElem)
 			id = `item-id-${prodId}`
 			var parentElem = document.getElementById(id)
-			var itemPrice = parseFloat(parentElem.querySelector('#item-price').textContent).toFixed(2)
-			var itemQty = parseInt(parentElem.querySelector('#item-quantity').textContent)
-			
+			console.log(parentElem)
+			if (parentElem != null){
 
-			if (itemQty <= 0){
-				console.log("0")
-				parentElem.classList.add("hidden");
-				//to reload when item removed or when item goes from 0 to 1
-				window.location.reload()
-			}else{
-
-				if (action == 'add'){
-					itemQty++
-				}
-				else if(action == 'remove'){
-					itemQty--
-				}else{
-					return
-				}
-				itemTotal = parseFloat(itemQty * itemPrice).toFixed(2);
+				var itemPrice = parseFloat(parentElem.querySelector('#item-price').textContent).toFixed(2)
+				var itemQty = parseInt(parentElem.querySelector('#item-quantity').textContent)
+				
 	
-				parentElem.querySelector('#item-quantity').textContent = itemQty
-				parentElem.querySelector('#item-total').textContent = itemTotal
+				if (itemQty <= 0){
+					console.log("0")
+					parentElem.classList.add("hidden");
+					//to reload when item removed or when item goes from 0 to 1
+					window.location.reload()
+				}else{
+	
+					if (action == 'add'){
+						itemQty++
+					}
+					else if(action == 'remove'){
+						itemQty--
+					}else{
+						return
+					}
+					itemTotal = parseFloat(itemQty * itemPrice).toFixed(2);
+		
+					parentElem.querySelector('#item-quantity').textContent = itemQty
+					parentElem.querySelector('#item-total').textContent = itemTotal
+				}
 			}
 
 
@@ -143,7 +186,8 @@
 	     	<a href="{% url 'cart' %}">
 	    		<img  id="cart-icon" src="{% static 'img/cart.png' %} " class="img-fluid" style="width: 40px">
 	    	</a>
-	    	<p id="cart-total">0</p>
+			
+	    	<p id="cart-total">{{ cartItemsQty }} </p>
 
 	    </div>
 	  </div>
