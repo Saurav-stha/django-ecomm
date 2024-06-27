@@ -44,13 +44,15 @@
 				//removing whitespace 
 				if(name == cookiePair[0].trim()){
 					//decode cookie value
-					return decodeURIComponent(cookiePair[i].trim());
+					return decodeURIComponent(cookiePair[1].trim()); // [1] not [i]
 				}
 			}
 
 			//if not found
 			return null
 		}
+
+
 		var cart = JSON.parse(getCookie('cart'))
 		
 		if(cart == undefined){
@@ -66,6 +68,8 @@
 
 		// Function to update cart total
 		function updateCartTotal() {
+			console.log("update cart total funciton called ")
+
 			fetch("{% url 'update_cart' %}", {
 				method: 'GET',
 				headers: {
