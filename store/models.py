@@ -46,21 +46,22 @@ class Order(models.Model):
             if i.product.digital == False:
                 shippingStat = True
         return shippingStat
-    
+
+    @property
     def get_cart_total(self):
         orderitems = self.orderitem_set.all()
         # sums each items total for each item
         cart_total = sum([item.get_total for item in orderitems])
 
         return cart_total
-
-    # oredaa = afai gareko haru
+    
+    @property
     def get_cart_total_items(self):
         orderitems= self.orderitem_set.all()
-        cart_total_items = sum([1 for item in orderitems])
-
+        cart_total_items = len(orderitems)
         return cart_total_items
-    
+
+    @property
     def get_cart_itemsQty(self):
         orderitems = self.orderitem_set.all()
         itemsQty = sum([item.qty for item in orderitems])

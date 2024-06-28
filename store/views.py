@@ -8,23 +8,16 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from .models import *
 
-from .utils import cookieCart
+from .utils import cookieCart, cartData, guestOrder
 # Create your views here.
 
-
-
-
 def index(request):
-    # user = request.user
-    # try:
-    #     customer = user.customer
-    #     return JsonResponse(customer)
-    # except Customer.DoesNotExist:
-    #     return JsonResponse({'error': 'User has no customer'}, status=404)
+    data = cookieCart(request)
+    cartItemsQty = data['cartItemsQty']
 
     products = Product.objects.all()
 
-    context = {'products':products}
+    context = {'products':products, 'cartItemsQty': cartItemsQty}
     return render(request, 'store/store.html', context)
 
 def loginUser(request):
@@ -56,6 +49,27 @@ def loginUser(request):
 def logoutUser(request):
     logout(request)
     return redirect('store')
+
+
+def cart(request):
+
+    data = cookieCart(request)
+    items = data['items']
+    order = data['order']
+    cartItemsQty = data['cartItemsQty']
+
+    context = {'items': items, 'order': order, 'cartItemsQty': cartItemsQty}
+    return render(request, 'store/cart.html', context)
+ 
+def checkout(request):
+
+    data = cookieCart(request)
+    items = data['items']
+    order = data['order']
+    cartItemsQty = data['cartItemsQty']
+    
+    context = {'items':items, 'order': order, 'cartItemsQty': cartItemsQty}
+    return render(request, 'store/checkout.html', context )
 
 def updateCart(request):
     if request.user.is_authenticated:
@@ -92,62 +106,6 @@ def updateCart(request):
     return JsonResponse(context)
 
 
-
-# #################### to be eedddiitedd ############################
-# def updateCartItem(request, pk):
-#     customer = request.user.customer
-    
-#     order, created = Order.objects.get_or_create(customer=customer, complete=False)
-#     # orderitem = order.orderitem_set.all()
-
-#     # return JsonResponse({'sth'})
-#     orderitems = OrderItem.objects.filter(order=order)
-    
-#     one = orderitems.get(id=pk)
-#     itemTotal = one.product.price*one.qty
-#     itemQty = one.qty
-
-#     # return JsonResponse({'id ':pk, ' customer ': customer.name, ' totalll ': itemTotal, " updated qty: ": itemQty})
-#     context = {'itemTotal': itemTotal , 'itemQty':itemQty}
-#     return JsonResponse(context)
-
-
-
-def cart(request):
-
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete = False)
-        items = order.orderitem_set.all()
-        cartItemsQty = order.get_cart_itemsQty()
-        # print("cart totla qty : ",cartItemsQty)
-    else:
-        cartData = cookieCart(request)
-        items = cartData['items']
-        order = cartData['order']
-        cartItemsQty = cartData['cartItemsQty']
-
-    context = {'items': items, 'order': order, 'cartItemsQty': cartItemsQty}
-    return render(request, 'store/cart.html', context)
- 
-def checkout(request):
-
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete = False)
-        items = order.orderitem_set.all()
-        cartItems = order.get_cart_total_items
-    else:
-        items = []
-        order = {'get_cart_total': 0 , 'get_cart_itemsQty': 0, 'get_cart_total_items' : 0, 'shipping': False}
-        cartData = cookieCart(request)
-        items = cartData['items']
-        order = cartData['order']
-        cartItemsQty = cartData['cartItemsQty']
-    
-    context = {'items':items, 'order': order}
-    return render(request, 'store/checkout.html', context )
-
 def updateItem(request):
     data = json.loads(request.body)
     productId = data['productId']
@@ -183,33 +141,38 @@ def processOrder(request):
     if request.user.is_authenticated:
         customer = request.user.customer
         order, created = Order.objects.get_or_create(customer=customer, complete= False)
-        total = float(data['form']['total'])
-        order.transaction_id = transaction_id
-
-        # for checking no any manipulation done by user
-        # print(total)
-        # tryTotal = int(order.get_cart_total())
-        # print(tryTotal)
-        if total == order.get_cart_total():
-            # setting order status to complete
-            print("yesss")
-            order.complete = True
-        else:
-            print("no god no noooo")
-
-        order.save()
-
-        if order.shipping == True:
-            ShippingAddress.objects.create(
-                customer =customer,
-                order=order,
-                address = data['shipping']['address'],
-                city=data['shipping']['city'],
-                state = data['shipping']['state'],
-                zipcode = data['shipping']['zipcode'],
-
-            )
 
     else:
-        print("User not logged in hai")
+        customer, order = guestOrder(request, data)
+    
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    # for checking no any manipulation done by user
+    # print(total)
+    # tryTotal = int(order.get_cart_total())
+    # print(tryTotal)
+    if total == order.get_cart_total():
+        # setting order status to complete
+        print("yesss")
+        order.complete = True
+    else:
+        print("no god no noooo")
+
+    if order.shipping == True:
+        ShippingAddress.objects.create(
+            customer =customer,
+            order=order,
+            address = data['shipping']['address'],
+            city=data['shipping']['city'],
+            state = data['shipping']['state'],
+            zipcode = data['shipping']['zipcode'],
+
+        )
+
+
+    order.save()
+
+
+
     return JsonResponse('payment complete', safe=False)
