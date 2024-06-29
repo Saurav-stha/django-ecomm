@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect
 
 from django.http import JsonResponse
 
@@ -134,9 +134,14 @@ def updateItem(request):
 
 
 def processOrder(request):
-    # print("data: ", request.body)
+    print("data: ", request.body)
+    
     transaction_id = datetime.datetime.now().timestamp()
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except:
+        print("error in loading json data from the fetch form data")
+    # return JsonResponse(data, safe=False)
 
     if request.user.is_authenticated:
         customer = request.user.customer
@@ -152,7 +157,9 @@ def processOrder(request):
     # print(total)
     # tryTotal = int(order.get_cart_total())
     # print(tryTotal)
-    if total == order.get_cart_total():
+
+    # no get_cart_total() cause @property used above the function
+    if total == order.get_cart_total:
         # setting order status to complete
         print("yesss")
         order.complete = True

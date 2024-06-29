@@ -159,9 +159,7 @@
             body:JSON.stringify({'form':userFormData, 'shipping': shippingInfo})
         })
     
-        .then((response) => {
-            return response.json()
-        })  
+        .then((response) => response.json())  
     
         .then((data)=>{
             console.log("succes:: ", data);
@@ -172,6 +170,9 @@
 
             window.location.href = '{% url "store" %}'
         })
+        .catch((error) => {
+            console.error("Error: ", error);
+        });
     }
 
 
