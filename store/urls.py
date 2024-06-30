@@ -16,5 +16,7 @@ urlpatterns = [
 
     path("update_cart", views.updateCart, name="update_cart"), # for data of cart total qty
 
+    path("user_profile", views.userProfile, name="user_profile")
+
 
 ]

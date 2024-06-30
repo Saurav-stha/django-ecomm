@@ -183,3 +183,18 @@ def processOrder(request):
 
 
     return JsonResponse('payment complete', safe=False)
+
+
+def userProfile(request):
+    total_order_cost = 0
+    customer = request.user.customer
+    profile = User.objects.get(customer=customer)
+    shippingInfos = ShippingAddress.objects.filter(customer=customer)
+    orders = Order.objects.filter(customer=customer)
+    # # print("total orders: " , orders.count())
+    for order in orders:
+        total_order_cost += order.get_cart_total
+        print("cost: ",order.get_cart_total)
+
+    context = {'profile':profile, 'shippingInfos':shippingInfos, 'orders':orders, 'total_order_cost':total_order_cost}
+    return render(request, 'store/profile.html',context)
