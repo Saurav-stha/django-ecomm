@@ -12,7 +12,7 @@ from .utils import cookieCart, cartData, guestOrder
 # Create your views here.
 
 def index(request):
-    data = cookieCart(request)
+    data = cartData(request)
     cartItemsQty = data['cartItemsQty']
 
     products = Product.objects.all()
@@ -53,7 +53,7 @@ def logoutUser(request):
 
 def cart(request):
 
-    data = cookieCart(request)
+    data = cartData(request)
     items = data['items']
     order = data['order']
     cartItemsQty = data['cartItemsQty']
@@ -63,7 +63,7 @@ def cart(request):
  
 def checkout(request):
 
-    data = cookieCart(request)
+    data = cartData(request)
     items = data['items']
     order = data['order']
     cartItemsQty = data['cartItemsQty']

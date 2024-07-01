@@ -38,6 +38,10 @@ class Order(models.Model):
     def __str__(self):
         return str(self.id)
     
+    # to disable making multiple incomplete orders
+    class Meta:
+        unique_together = ['customer','complete']
+
     @property
     def shipping(self):
         shippingStat = False
